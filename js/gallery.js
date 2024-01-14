@@ -85,17 +85,11 @@ const result = images.map((image) => {
 
     imgElem.classList.add("gallery-image");
     imgElem.src = image.preview;
-    imgElem.dataset.sourсe = image.original;
+    imgElem.dataset.source = image.original;
     imgElem.alt = image.description;
     
     linkElem.classList.add("gallery-link");
     linkElem.href = image.original;
-    
-    linkElem.addEventListener('click', (event) => { 
-        event.preventDefault(); //зупиняє дію браузера за замовчуванням - скачування картинки при кліку на неї.
-
-
-    })
 
     liElem.appendChild(linkElem);
     linkElem.appendChild(imgElem);
@@ -108,30 +102,48 @@ elem.append(...result);
 // Делегування
 
 elem.addEventListener('click', (event) => {
-   if (event.target.tagName === "IMG") {
-        const originalHref = event.target.dataset.sourсe;
+  if (event.target.tagName === "IMG") {
+     event.preventDefault(); //зупиняє дію браузера за замовчуванням - скачування картинки при кліку на неї.
+        const originalHref = event.target.dataset.source;
         console.log(originalHref);     
-    
-// 7 - Модальне вікно
-    const instance = basicLightbox.create(`
-     <img src="${originalHref}" width="800" height="600">
-`, )
-instance.show()
-    elem.classList.add('modal-open');
-    
-
-       // Додавання обробника подій для закриття вікна через "Escape"
-       const eKeyDown = (event) => {
-           if (event.key === 'Escape') {
-               instance.close();
-            elem.classList.remove('modal-open');
-               elem.removeEventListener('keydown', eKeyDown);
-           }
-       };
-       elem.addEventListener('keydown', eKeyDown);
-   }
+  
+   // Відкриття модального вікна
+        openModal(originalHref);
+        elem.classList.add('modal-open');
+  }
   
 });
+
+// Відкриття та закриття модального вікна
+function openModal(originalHref) {
+    const instance = basicLightbox.create(`
+        <img src="${originalHref}" width="800" height="600">
+    `);
+
+    instance.show();
+
+    // Додавання слухача подій для закриття вікна через "Escape"
+    const eKeyDown = (event) => {
+        if (event.key === 'Escape') {
+            instance.close();
+            document.removeEventListener('keydown', eKeyDown);
+            elem.classList.remove('modal-open');
+        }
+    };
+
+    document.addEventListener('keydown', eKeyDown);
+}
+
+function closeModal() {
+    const instance = basicLightbox.getInstance();
+    if (instance) {
+        instance.close();
+        elem.classList.remove('modal-open');
+    }
+}
+
+
+
 
 
 
