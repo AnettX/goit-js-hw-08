@@ -99,50 +99,34 @@ const result = images.map((image) => {
 elem.append(...result);
 
 
-// Делегування
+elem.addEventListener('click', onElemClick);
 
-elem.addEventListener('click', (event) => {
-  if (event.target.tagName === "IMG") {
-     event.preventDefault(); //зупиняє дію браузера за замовчуванням - скачування картинки при кліку на неї.
-        const originalHref = event.target.dataset.source;
-        console.log(originalHref);     
-  
-   // Відкриття модального вікна
-        openModal(originalHref);
-        elem.classList.add('modal-open');
-  }
-  
-});
 
-// Відкриття та закриття модального вікна
-function openModal(originalHref) {
-    const instance = basicLightbox.create(`
-        <img src="${originalHref}" width="800" height="600">
-    `);
+function onElemClick(e) {
+if (e.target.nodeName === "IMG") {
+  e.preventDefault(); //зупиняє дію браузера за замовчуванням - скачування картинки при кліку на неї;
+  const originalHref = e.target.dataset.source;
+  console.log(originalHref);
 
-    instance.show();
+  instance = basicLightbox.create(
+    `<img src="${originalHref}" width="800" height="600">`,
 
-    // Додавання слухача подій для закриття вікна через "Escape"
-    const eKeyDown = (event) => {
-        if (event.key === 'Escape') {
-            instance.close();
-            document.removeEventListener('keydown', eKeyDown);
-            elem.classList.remove('modal-open');
-        }
-    };
-
-    document.addEventListener('keydown', eKeyDown);
-}
-
-function closeModal() {
-    const instance = basicLightbox.getInstance();
-    if (instance) {
-        instance.close();
-        elem.classList.remove('modal-open');
+    {
+      onShow: (instance) => {
+        document.addEventListener('keydown', eKeyDown),
+    elem.classList.add('modal-open') },
+      onClose: (instance) => {document.removeEventListener('keydown', eKeyDown) },
+    });
+  instance.show(); 
+  };
+    function eKeyDown(e) {
+    if (e.key === 'Escape') {
+      instance.close();
+       elem.classList.remove('modal-open');
     }
+};
+
 }
-
-
 
 
 
